@@ -19,5 +19,5 @@ To implement the REST API just fork the repository and open a new pull request f
 7. As a user I should be able to sort my todo list by due date.
 8. As a user I should be able to sort my todo list by priority.
 9. As a user I should be able to set a item as completed.
-10. As a user I should be able to assign a task to another user.
-11. As a user I should be able to list tasks assigned to a user
+10. As a user I should be able to assign a task to another user using github id.
+11. As a user I should be able to list tasks assigned to a github user
