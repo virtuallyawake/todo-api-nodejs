@@ -4,9 +4,10 @@ Create a REST API to manage user tasks list.
 
 To implement the REST API just fork the repository and open a new pull request for each feature.
 
-# Notes
+# Notes and considerations
 * The API needs to be built in Node.js
 * Preferable using express framework and mongod
+* Give particular attention in building the API with good design and user experience and good test coverage
 
 # Feature list
 
