@@ -2,11 +2,11 @@
 
 Create a REST API to manage user tasks list.
 
-To implement the REST API just fork the repository and open a new pull request for each feature.
+To implement the REST API just fork the repository and open a new pull request for each feature (just on you personal repo please).
 
 # Notes and considerations
 * The API needs to be built in Node.js
-* Preferable using express framework and mongod
+* Preferable using express framework and mongodb
 * Give particular attention in building the API with good design and user experience and good test coverage
 
 # Feature list
@@ -23,4 +23,4 @@ To implement the REST API just fork the repository and open a new pull request f
 10. As a user I should be able to assign a task to another user using github id.
 11. As a user I should be able to list tasks assigned to a github user
 
-**It's more important to build less features then build incomplete ones.**
+**It's more important to build less features and complete then build incomplete ones.**
