@@ -15,7 +15,7 @@ router.post('/:owner/items', function(req, res, next) {
 
     item.save(function(err, item) {
 	if (err)
-	    return next(err);
+	    return res.status(500).send(err);
 
 	res.location('/api/' + owner + '/items/' + item._id);
 	res.status(201);
