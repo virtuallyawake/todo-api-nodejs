@@ -47,5 +47,47 @@ describe('Item', function() {
 		    done();
 		});
 	});
-    })
+    });
+
+    // Test GETting all items for a user
+    describe('Get all items for a user', function() {
+	it('should return an empty array when there are no items for a particular user', function(done) {
+	    var owner = "daniela";
+	    chai.request(server)
+		.get('/api/' + owner + '/items')
+		.end(function(err, res) {
+		    console.dir(res.body);
+		    res.should.have.status(200);
+		    res.body.should.be.an('array');
+		    res.body.should.have.lengthOf(0);
+		    done();
+		});
+	});
+
+	it('should return an array with 1 the item that we added for a particular user', function(done) {
+	    var dueDate = new Date(Date.now());
+	    var item = {
+		"due_date" : dueDate,
+		"description" : "a test item",
+		"assigned_to" : "lucas"
+	    };
+	    var owner = "daniela";
+	    chai.request(server)
+		.post('/api/' + owner + '/items')  // First, we post an item
+		.send(item)
+		.end(function(err, res) {
+		    chai.request(server)
+			.get('/api/' + owner + '/items')  // Then, we get an array with 1 item
+			.end(function(err, res) {
+			    console.dir(res.body);
+			    res.should.have.status(200);
+			    res.body.should.be.an('array');
+			    res.body.should.have.lengthOf(1);
+			    res.body[0]['description'].should.equal('a test item');
+			    done();
+			});
+		});
+	});
+    });
+
 });

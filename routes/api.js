@@ -23,4 +23,15 @@ router.post('/:owner/items', function(req, res, next) {
     });
 });
 
+// GET all todo items for a user
+router.get('/:owner/items', function(req, res, next) {
+    var owner = req.params.owner;
+    Item.find({}, function(err, items) {
+	if (err)
+	    res.status(500).send(err);
+
+	res.json(items);
+    });
+});
+
 module.exports = router;
