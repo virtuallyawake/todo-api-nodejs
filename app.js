@@ -12,6 +12,9 @@ var config  = require('config');
 // Mongodb connection set-up
 var mongoose = require('mongoose');
 
+// Use native promises
+mongoose.Promise = global.Promise;
+
 // Add mongoose query and promise support to express
 require('express-mongoose');
 

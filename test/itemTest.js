@@ -142,4 +142,52 @@ describe('Item', function() {
 		});
 	});
     });
+
+    // Testing modifying an item
+    describe('Modifying an existing item', function() {
+	it('should update an item given its id and some new data', function(done) {
+	    var dueDate = new Date(Date.now());
+	    var owner = "daniela";
+	    var item = new Item({
+		"created_by" : owner,
+		"due_date" : dueDate,
+		"description" : "a test item",
+		"assigned_to" : "lucas"
+	    });
+	    item.save(function(err, item) {
+		var newData = {
+		    "description" : "Updated item",
+		    "assigned_to" : "daniela"
+		};
+		chai.request(server)
+		    .patch('/api/' + owner + '/items/' + item._id)
+		    .send(newData)
+		    .end(function(err, res) {
+			res.should.have.status(200);
+			res.body.should.be.an('object');
+			res.body['created_by'].should.equal('daniela');
+			res.body['due_date'].should.equal(dueDate.toISOString());
+			res.body['description'].should.equal('Updated item');
+			res.body['assigned_to'].should.equal('daniela');
+			res.body['_id'].should.equal(item._id.toString());  // Check that the modified item has the same id.
+			done();
+		    });
+	    });
+	});
+
+	it('should respond with 404 if the item does not exist', function(done) {
+	    var newData = {
+		"description" : "Updated item",
+		"assigned_to" : "daniela"
+	    };
+	    chai.request(server)
+		.patch('/api/daniela/items/592d80ca3cdb4d38b26cea28')
+		.send(newData)
+		.end(function(err, res) {
+		    res.should.have.status(404);
+		    res.body.should.be.empty;
+		    done();
+		});
+	});
+    });
 });
