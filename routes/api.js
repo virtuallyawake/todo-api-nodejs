@@ -53,6 +53,28 @@ router.delete('/:owner/items/:item_id', function(req, res, next) {
 router.patch('/:owner/items/:item_id', function(req, res, next) {
     var owner = req.params.owner;
     var itemId = req.params.item_id;
+    updateItem(itemId, req.body, res, function(err, item) {
+        if(err)
+	    res.status(500).send(err);
+
+        res.json(item);
+    });
+});
+
+// Set the priority of an item given its id
+router.patch('/:owner/items/:item_id/priority/:priority', function(req, res, next) {
+    var owner = req.params.owner;
+    var itemId = req.params.item_id;
+    var priority = req.params.priority;
+    updateItem(itemId, {priority : priority}, res, function(err, item) {
+        if (err)
+	    res.status(500).send(err);
+
+        res.status(204).send({});
+    });
+});
+
+function updateItem(itemId, fields, res, cb) {
     Item.findById(itemId, function(err, item) {
 	if (err)
 	    return res.status(500).send(err);
@@ -60,13 +82,8 @@ router.patch('/:owner/items/:item_id', function(req, res, next) {
 	if (!item)
 	    return res.status(404).send({});
 
-	Object.assign(item, req.body).save((err, item) => {
-            if(err)
-		res.status(500).send(err);
-
-            res.json(item);
-        });
+	Object.assign(item, fields).save(cb);
     });
-});
+}
 
 module.exports = router;

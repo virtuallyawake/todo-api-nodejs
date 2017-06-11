@@ -190,4 +190,36 @@ describe('Item', function() {
 		});
 	});
     });
+
+    // Test setting the priority for an item
+    describe('Setting the priority for an existing item', function() {
+	it('should set the priority of an item given its id and the priority value', function(done) {
+	    var dueDate = new Date(Date.now());
+	    var owner = "daniela";
+	    var item = new Item({
+		"created_by" : owner,
+		"due_date" : dueDate,
+		"description" : "a test item",
+		"assigned_to" : "lucas",
+		"priority" : 0
+	    });
+	    item.save(function(err, item) {
+		var newPriority = 3;
+		chai.request(server)
+		    .patch('/api/' + owner + '/items/' + item._id + '/priority/' + newPriority)
+		    .send()
+		    .end(function(err, res) {
+			res.should.have.status(204); // No content
+			res.body.should.be.empty;
+
+			// Verify that the priority was updated
+			Item.findById(item._id, function(err, item) {
+			    item.priority.should.equal(newPriority);
+			    done();
+			})
+		    });
+	    });
+	});
+    });
+
 });
