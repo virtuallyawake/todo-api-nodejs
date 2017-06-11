@@ -49,4 +49,24 @@ router.delete('/:owner/items/:item_id', function(req, res, next) {
     });
 });
 
+// Update an item given its id
+router.patch('/:owner/items/:item_id', function(req, res, next) {
+    var owner = req.params.owner;
+    var itemId = req.params.item_id;
+    Item.findById(itemId, function(err, item) {
+	if (err)
+	    return res.status(500).send(err);
+
+	if (!item)
+	    return res.status(404).send({});
+
+	Object.assign(item, req.body).save((err, item) => {
+            if(err)
+		res.status(500).send(err);
+
+            res.json(item);
+        });
+    });
+});
+
 module.exports = router;
