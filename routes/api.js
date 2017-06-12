@@ -62,7 +62,7 @@ router.patch('/:owner/items/:item_id', function(req, res, next) {
 });
 
 // Set the priority of an item given its id
-router.patch('/:owner/items/:item_id/priority/:priority', function(req, res, next) {
+router.patch('/:owner/items/:item_id/priority/:priority', ensureAuthorized, function(req, res, next) {
     var owner = req.params.owner;
     var itemId = req.params.item_id;
     var priority = req.params.priority;
@@ -84,6 +84,15 @@ function updateItem(itemId, fields, res, cb) {
 
 	Object.assign(item, fields).save(cb);
     });
+}
+
+// Simple route middleware to ensure user is authenticated.
+function ensureAuthorized(req, res, next) {
+    if (req.isAuthenticated() && req.params.owner === req.user.username) {
+	console.log("User is authenticated");
+	return next();
+    }
+    res.status(401).send({}); // Return 401 if unauthorized
 }
 
 module.exports = router;
