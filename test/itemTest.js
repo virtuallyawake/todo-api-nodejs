@@ -11,12 +11,19 @@ let server = require('../bin/www');
 let should = chai.should();
 
 chai.use(chaiHttp);
+var agent = chai.request.agent(server);
 
 describe('Item', function() {
     // Before each test we empty the database
     beforeEach(function(done) {
         Item.remove({}, function(err) { 
-           done();         
+	    var credentials = {username: "daniela", password: "test"};
+	    agent
+		.post('/login')
+		.send(credentials)
+		.end(function(err, res) {
+		    done();
+		});
         });     
     });
 
@@ -30,10 +37,10 @@ describe('Item', function() {
 		"assigned_to" : "lucas"
 	    };
 	    var owner = "daniela";
-	    chai.request(server)
+	    agent
 		.post('/api/' + owner + '/items')
 		.send(item)
-		.end(function(err, res) {
+		.then(function(res) {
 		    var location = '/api/' + owner + '/items/' + res.body._id;
 		    res.headers['location'].should.equal(location);
 		    res.should.have.status(201);
@@ -53,7 +60,7 @@ describe('Item', function() {
     describe('Get all items for a user', function() {
 	it('should return an empty array when there are no items for a particular user', function(done) {
 	    var owner = "daniela";
-	    chai.request(server)
+	    agent
 		.get('/api/' + owner + '/items')
 		.end(function(err, res) {
 		    res.should.have.status(200);
@@ -71,11 +78,11 @@ describe('Item', function() {
 		"assigned_to" : "lucas"
 	    };
 	    var owner = "daniela";
-	    chai.request(server)
+	    agent
 		.post('/api/' + owner + '/items')  // First, we post an item
 		.send(item)
 		.end(function(err, res) {
-		    chai.request(server)
+		    agent
 			.get('/api/' + owner + '/items')  // Then, we get an array with 1 item
 			.end(function(err, res) {
 			    res.should.have.status(200);
@@ -98,12 +105,12 @@ describe('Item', function() {
 		"assigned_to" : "lucas"
 	    };
 	    var owner = "daniela";
-	    chai.request(server)
+	    agent
 		.post('/api/' + owner + '/items')  // First, we post an item
 		.send(item)
 		.end(function(err, res) {
 		    var newItem = res.body;  // The item that was created
-		    chai.request(server)
+		    agent
 			.delete('/api/' + owner + '/items/' + newItem._id)  // Then, we delete the item we just created
 			.end(function(err, res) {
 			    res.should.have.status(200);
@@ -118,7 +125,7 @@ describe('Item', function() {
 	    var owner = "daniela";
 
 	    // We send a valid id that is not found in the database.
-	    chai.request(server)
+	    agent
 		.delete('/api/' + owner + '/items/' + "592d80ca3cdb4d38b26cea28")
 		.end(function(err, res) {
 		    res.should.have.status(200);
@@ -132,7 +139,7 @@ describe('Item', function() {
 	    var owner = "daniela";
 
 	    // We send a valid id that is not found in the database.
-	    chai.request(server)
+	    agent
 		.delete('/api/' + owner + '/items/' + "random-string-dhsadahduewtufeuhrf")
 		.end(function(err, res) {
 		    res.should.have.status(500);
@@ -159,7 +166,7 @@ describe('Item', function() {
 		    "description" : "Updated item",
 		    "assigned_to" : "daniela"
 		};
-		chai.request(server)
+		agent
 		    .patch('/api/' + owner + '/items/' + item._id)
 		    .send(newData)
 		    .end(function(err, res) {
@@ -180,7 +187,7 @@ describe('Item', function() {
 		"description" : "Updated item",
 		"assigned_to" : "daniela"
 	    };
-	    chai.request(server)
+	    agent
 		.patch('/api/daniela/items/592d80ca3cdb4d38b26cea28')
 		.send(newData)
 		.end(function(err, res) {
@@ -205,7 +212,7 @@ describe('Item', function() {
 	    });
 	    item.save(function(err, item) {
 		var newPriority = 3;
-		chai.request(server)
+		agent
 		    .patch('/api/' + owner + '/items/' + item._id + '/priority/' + newPriority)
 		    .send()
 		    .end(function(err, res) {

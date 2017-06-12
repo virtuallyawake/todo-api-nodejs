@@ -1,4 +1,5 @@
 var express = require('express');
+var session = require('express-session');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -8,6 +9,10 @@ var debug = require('debug')('todo-api-nodejs:server');
 var index = require('./routes/index');
 var api = require('./routes/api');
 var config  = require('config');
+var passport = require('passport');
+
+// Configure passport
+require('./auth/passport')(passport);
 
 // Mongodb connection set-up
 var mongoose = require('mongoose');
@@ -31,13 +36,19 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(cookieParser());
+app.use(session({ secret: 'session secret' }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', index);
+app.post('/login', passport.authenticate('local'), function(req, res) {
+    res.status(204).send({});
+});
 app.use('/api', api);
 
 // catch 404 and forward to error handler
